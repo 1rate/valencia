@@ -1,0 +1,10 @@
+/* src/index.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Дополнительные стили */
+body {
+  font-family: 'Open Sans', sans-serif;
+}
