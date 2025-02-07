@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#4A90E2',      // Ярко-синий
+        primary: '#db8f8f',      // Ярко-синий
         secondary: '#F5F7FA',    // Светло-серый
         accent: '#50E3C2',       // Бирюзовый
         text: '#333333',         // Темно-серый

@@ -1,29 +1,66 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+// src/components/Header.js
+
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '../assets/logo.webp';
 import SearchBar from './SearchBar';
 
-function Header({ openCart }) {
+function Header({ openCart, isFixed = true }) {
   const cartItems = useSelector((state) => state.cart.items);
-  const totalQuantity = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const location = useLocation();
+  const touchStartY = useRef(0);
+
+  const openMenu = useCallback(() => {
+    setIsMenuOpen(true);
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false);
+  }, []);
+
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e) => {
+    const touchCurrentY = e.touches[0].clientY;
+    if (touchStartY.current - touchCurrentY > 50) {
+      closeMenu();
+    }
+  };
+
+  // Храним предыдущий путь
+  const prevPathname = useRef(location.pathname);
+
+  useEffect(() => {
+    if (isMenuOpen && prevPathname.current !== location.pathname) {
+      closeMenu();
+    }
+    prevPathname.current = location.pathname;
+  }, [location.pathname, isMenuOpen, closeMenu]);
+
+  const headerClasses = isFixed
+    ? 'fixed top-0 w-full bg-white shadow z-50'
+    : 'bg-white shadow';
 
   return (
-    <header className="fixed top-0 w-full bg-white shadow z-50">
-      <div className="container mx-auto flex items-center justify-between py-2 px-4">
-        {/* Левая часть: Логотип и навигационные ссылки */}
-        <div className="flex items-center space-x-4">
+    <header className={`${headerClasses} mb-0`}>
+      {/* Контент хедера */}
+      <div className="container mx-auto flex items-center justify-between py-3 px-4">
+        {/* Левая часть: Логотип и название компании */}
+        <div className="flex items-center space-x-2">
           <Link to="/" className="flex items-center">
             <img src={Logo} alt="Logo" className="h-8 mr-2" />
             <span className="text-lg font-bold text-gray-800">Валенсия</span>
           </Link>
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Навигационные ссылки для десктопа */}
+          <div className="hidden md:flex items-center space-x-4 ml-6">
             <Link to="/cakes" className="text-gray-700 hover:text-primary">
               Товары
             </Link>
@@ -33,53 +70,26 @@ function Header({ openCart }) {
           </div>
         </div>
 
-        {/* Правая часть: Поиск, корзина и меню */}
+        {/* Правая часть: Поиск и меню */}
         <div className="flex items-center space-x-2">
-          {/* Иконка поиска для мобильных устройств */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="text-gray-700 hover:text-primary focus:outline-none"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  cx="11"
-                  cy="11"
-                  r="8"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <line
-                  x1="21"
-                  y1="21"
-                  x2="16.65"
-                  y2="16.65"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
-          {/* Поиск для десктопа */}
+          {/* Поисковая строка для десктопа */}
           <div className="hidden md:block">
             <SearchBar />
           </div>
-          {/* Иконка корзины */}
-          <div className="relative">
-            <button onClick={openCart} className="relative focus:outline-none">
+
+          {/* Иконка корзины для десктопа */}
+          <div className="relative hidden md:block">
+            <button
+              onClick={openCart}
+              className="relative focus:outline-none text-gray-700 hover:text-primary"
+            >
               <svg
-                className="w-6 h-6 text-gray-700 hover:text-primary"
+                className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
+                {/* SVG корзины */}
                 <path
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4"
                   strokeWidth="2"
@@ -96,10 +106,11 @@ function Header({ openCart }) {
               )}
             </button>
           </div>
+
           {/* Иконка меню для мобильных устройств */}
           <div className="md:hidden">
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={openMenu}
               className="text-gray-700 hover:text-primary focus:outline-none"
             >
               <svg
@@ -108,55 +119,89 @@ function Header({ openCart }) {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                {isMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
+                {/* Иконка меню */}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               </svg>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Расширенное поле поиска на мобильных устройствах */}
-      {isSearchOpen && (
-        <div className="md:hidden bg-white shadow px-4 py-2">
-          <SearchBar closeSearch={() => setIsSearchOpen(false)} />
-        </div>
-      )}
+      {/* Полноэкранное мобильное меню */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween' }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+          >
+            {/* Кнопка закрытия */}
+            <button
+              onClick={closeMenu}
+              className="absolute top-4 right-4 text-gray-700 hover:text-primary focus:outline-none"
+            >
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                {/* Иконка закрытия */}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
 
-      {/* Мобильное меню */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white shadow">
-          <div className="px-4 pt-4 pb-2 space-y-2">
-            <Link
-              to="/cakes"
-              className="block text-gray-700 hover:text-primary"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Товары
-            </Link>
-            <Link
-              to="/constructor"
-              className="block text-gray-700 hover:text-primary"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Конструктор
-            </Link>
-          </div>
-        </div>
-      )}
+            {/* Содержимое меню */}
+            <div className="flex flex-col items-center space-y-6">
+              {/* Название компании */}
+              <span className="text-2xl font-bold text-gray-800">Валенсия</span>
+
+              {/* Поисковая строка */}
+              <div className="w-3/4">
+                <SearchBar closeMenu={closeMenu} />
+              </div>
+
+              {/* Ссылки меню */}
+              <Link
+                to="/cakes"
+                className="text-gray-700 hover:text-primary text-xl"
+                onClick={closeMenu}
+              >
+                Товары
+              </Link>
+              <Link
+                to="/constructor"
+                className="text-gray-700 hover:text-primary text-xl"
+                onClick={closeMenu}
+              >
+                Конструктор
+              </Link>
+              {/* Ссылка на корзину */}
+              <Link
+                to="/checkout"
+                className="text-gray-700 hover:text-primary text-xl"
+                onClick={closeMenu}
+              >
+                Корзина
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

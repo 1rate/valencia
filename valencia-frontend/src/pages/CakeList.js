@@ -1,5 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { AnimatePresence } from 'framer-motion';
+// src/pages/CakeList.js
+
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
@@ -8,30 +15,58 @@ import ScrollToTopButton from '../components/ScrollToTopButton';
 import NavigationBar from '../components/NavigationBar';
 
 function CakeList() {
+  // Состояния для данных и управления компонентом
   const [products, setProducts] = useState([]);
-  const categories = [
-    'Торты',
-    'Печенье',
-    'Выпечка',
-    'Шоколад',
-    'Макароны',
-    'Тарты',
-    'Подарочные наборы',
-    'Комбо',
-    'Завтраки',
-    'Кофе',
-    'Напитки',
-    'Десерты',
-    'Детские блюда',
-    'Акции',
-  ];
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentCategory, setCurrentCategory] = useState(null);
+
+  // Мемоизированный список категорий
+  const categories = useMemo(
+    () => [
+      'Торты',
+      'Печенье',
+      'Выпечка',
+      'Шоколад',
+      'Макароны',
+      'Тарты',
+      'Подарочные наборы',
+      'Комбо',
+      'Завтраки',
+      'Кофе',
+      'Напитки',
+      'Десерты',
+      'Детские блюда',
+      'Акции',
+    ],
+    []
+  );
 
   const location = useLocation();
   const categoryRefs = useRef({});
 
+  // Обработчик прокрутки для обновления текущей категории
+  useEffect(() => {
+    const handleScroll = () => {
+      // Определение текущей категории на основе позиции прокрутки
+      const scrollPosition = window.scrollY + 200;
+      let currentCat = null;
+
+      categories.forEach((category) => {
+        const ref = categoryRefs.current[category];
+        if (ref && ref.offsetTop <= scrollPosition) {
+          currentCat = category;
+        }
+      });
+
+      setCurrentCategory(currentCat);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [categories]);
+
+  // Получение продуктов при монтировании компонента
   useEffect(() => {
     axios
       .get('http://127.0.0.1:8000/api/products/')
@@ -43,6 +78,7 @@ function CakeList() {
       });
   }, []);
 
+  // Установка поискового запроса из состояния роутинга
   useEffect(() => {
     if (location.state && location.state.searchTerm) {
       setSearchTerm(location.state.searchTerm);
@@ -51,56 +87,45 @@ function CakeList() {
     }
   }, [location.state]);
 
-  const scrollToCategory = (category) => {
+  // Функция для прокрутки к определенной категории
+  const scrollToCategory = useCallback((category) => {
     if (categoryRefs.current[category]) {
       categoryRefs.current[category].scrollIntoView({ behavior: 'smooth' });
       setCurrentCategory(category);
     }
-  };
-
-  const handleScroll = () => {
-    const scrollPosition = window.scrollY + 200;
-    let currentCat = null;
-
-    categories.forEach((category) => {
-      const ref = categoryRefs.current[category];
-      if (ref && ref.offsetTop <= scrollPosition) {
-        currentCat = category;
-      }
-    });
-
-    setCurrentCategory(currentCat);
-  };
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const closeModal = () => {
-    setSelectedProduct(null);
-  };
-
-  const openModal = (product) => {
+  // Функции для открытия и закрытия модального окна продукта
+  const openModal = useCallback((product) => {
     setSelectedProduct(product);
-  };
+  }, []);
 
-  const filteredProducts = searchTerm
-    ? products.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : products;
+  const closeModal = useCallback(() => {
+    setSelectedProduct(null);
+  }, []);
+
+  // Мемоизированный список отфильтрованных продуктов
+  const filteredProducts = useMemo(() => {
+    return searchTerm
+      ? products.filter((product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : products;
+  }, [products, searchTerm]);
 
   return (
     <div className="">
+      {/* Навигационная панель */}
       <NavigationBar
         categories={categories}
         currentCategory={currentCategory}
         scrollToCategory={scrollToCategory}
       />
 
-      <div className="container mx-auto px-4">
+      {/* Контент */}
+      <div className="container mx-auto px-4 pt-8">
         {categories.map((category) => {
+          // Фильтруем продукты по категории
           const categoryProducts = filteredProducts.filter(
             (product) => product.category === category
           );
@@ -113,7 +138,9 @@ function CakeList() {
               ref={(el) => (categoryRefs.current[category] = el)}
               className="mb-8"
             >
+              {/* Заголовок категории */}
               <h2 className="text-3xl font-bold text-black mb-4">{category}</h2>
+              {/* Карточки продуктов */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {categoryProducts.map((product) => (
                   <ProductCard
@@ -128,12 +155,12 @@ function CakeList() {
         })}
       </div>
 
-      <AnimatePresence>
-        {selectedProduct && (
-          <ProductModal product={selectedProduct} closeModal={closeModal} />
-        )}
-      </AnimatePresence>
+      {/* Модальное окно продукта */}
+      {selectedProduct && (
+        <ProductModal product={selectedProduct} closeModal={closeModal} />
+      )}
 
+      {/* Кнопка прокрутки вверх */}
       <ScrollToTopButton />
     </div>
   );

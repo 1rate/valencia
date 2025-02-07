@@ -1,5 +1,7 @@
+// src/App.js
+
 import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -25,10 +27,14 @@ function App() {
     setIsCartOpen(false);
   };
 
+  const location = useLocation();
+  const isCakeListPage = location.pathname === '/cakes';
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Header openCart={openCart} />
-      <main className="flex-grow pt-[56px]">
+      {/* Передаём проп isFixed в Header */}
+      <Header openCart={openCart} isFixed={!isCakeListPage} />
+      <main className={`flex-grow ${!isCakeListPage ? 'pt-[56px]' : ''}`}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/cakes" element={<CakeList />} />
