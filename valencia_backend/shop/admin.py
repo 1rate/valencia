@@ -2,6 +2,12 @@ from django.contrib import admin
 from .models import Product, Order, OrderItem
 
 @admin.register(Product)
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    search_fields = ('name',)
+
+
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'price', 'calories', 'proteins', 'fats', 'carbohydrates', 'is_new', 'is_popular')
     list_filter = ('category', 'is_new', 'is_popular')

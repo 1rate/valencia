@@ -26,7 +26,16 @@ SECRET_KEY = 'django-insecure-cr^0e4%yrs_c@1vuy+evxpo2+4z656vth*k7$$&ad#sdj*ed&$
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+# settings.py
 
+TELEGRAM_BOT_TOKEN = '7627925270:AAHwrON0MKkwp7g_6m9Hvd20iUR1Z0TAeR0'
+TELEGRAM_CHAT_ID = '1051167805'  # ID чата, куда отправлять уведомления
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    # ... другие настройки
+}
 
 # Application definition
 
@@ -37,9 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'shop',
+    'django_filters',
     'rest_framework',
     'corsheaders',
+    'shop.apps.ShopConfig'
+    
 ]
 
 MIDDLEWARE = [
@@ -125,7 +136,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
