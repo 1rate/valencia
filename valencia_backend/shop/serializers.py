@@ -22,7 +22,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'first_name', 'last_name', 'phone_number', 'created_at', 'order_items']
+        fields = ['id', 'first_name', 'last_name', 'phone_number', 'created_at', 'order_items', 'pickup_point']
 
     def create(self, validated_data):
         order_items_data = validated_data.pop('order_items')
@@ -41,7 +41,7 @@ class OrderSerializer(serializers.ModelSerializer):
             for item in order_items:
                 order_items_text += f"{item.product.name} – {item.quantity} ед.\n"
         else:
-            order_items_text = "Заказ не содержит товаров."
+            order_items_text = "Заказали индивидуальный торт. Перезвоните для уточнения деталей."
         
         # Формируем сообщение для уведомления
         message = (

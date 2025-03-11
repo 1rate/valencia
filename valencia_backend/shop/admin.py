@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Order, OrderItem
+from .models import Product, Order, OrderItem, PickupPoint
 
 @admin.register(Product)
 
@@ -36,3 +36,8 @@ class OrderAdmin(admin.ModelAdmin):
     def get_total_amount(self, obj):
         return obj.get_total_amount()
     get_total_amount.short_description = 'Сумма заказа'
+
+@admin.register(PickupPoint)
+class PickupPointAdmin(admin.ModelAdmin):
+    list_display = ('id', 'address', 'latitude', 'longitude')
+    search_fields = ('address',)

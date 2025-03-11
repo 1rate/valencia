@@ -44,11 +44,22 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+        
+class PickupPoint(models.Model):
+    address = models.CharField(max_length=255, verbose_name="Адрес")
+    latitude = models.FloatField(null=True, blank=True, verbose_name="Широта")
+    longitude = models.FloatField(null=True, blank=True, verbose_name="Долгота")
+
+    def __str__(self):
+        return self.address
+
+
 class Order(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
+    pickup_point = models.ForeignKey(PickupPoint, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Точка приёма")
 
     def __str__(self):
         return f"Заказ #{self.id} от {self.first_name} {self.last_name}"
@@ -67,3 +78,4 @@ class OrderItem(models.Model):
 
     def get_total_price(self):
         return self.product.price * self.quantity
+
