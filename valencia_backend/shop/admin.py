@@ -1,7 +1,13 @@
 from django.contrib import admin
-from .models import Product, Order, OrderItem
+from .models import Product, Order, OrderItem, PickupPoint
 
 @admin.register(Product)
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    search_fields = ('name',)
+
+
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'price', 'calories', 'proteins', 'fats', 'carbohydrates', 'is_new', 'is_popular')
     list_filter = ('category', 'is_new', 'is_popular')
@@ -30,3 +36,8 @@ class OrderAdmin(admin.ModelAdmin):
     def get_total_amount(self, obj):
         return obj.get_total_amount()
     get_total_amount.short_description = 'Сумма заказа'
+
+@admin.register(PickupPoint)
+class PickupPointAdmin(admin.ModelAdmin):
+    list_display = ('id', 'address', 'latitude', 'longitude')
+    search_fields = ('address',)
