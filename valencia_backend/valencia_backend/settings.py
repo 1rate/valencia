@@ -53,7 +53,7 @@ MIDDLEWARE = [
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-    'https://f5c7-147-45-74-27.ngrok-free.app',
+    'https://overly-dignified-toad.cloudpub.ru',
     'http://127.0.0.1:8000'
 
 ]
@@ -61,7 +61,7 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_COOKIE_HTTPONLY = False
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://f5c7-147-45-74-27.ngrok-free.app',
+    'https://overly-dignified-toad.cloudpub.ru',
     'http://127.0.0.1:8000',
     'http://localhost:3000',
 ]
