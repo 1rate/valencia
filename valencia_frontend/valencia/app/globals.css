@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@layer base {
+  :root {
+    --foreground: 20 14.3% 4.1%; /* Оригинальный цвет текста (черный) */
+
+    --card: 0 0% 100%; /* Оригинальный цвет карточек (белый) */
+    --card-foreground: 20 14.3% 4.1%; /* Оригинальный цвет текста на карточках */
+
+    --popover: 0 0% 100%; /* Оригинальный цвет всплывающих окон (белый) */
+    --popover-foreground: 20 14.3% 4.1%; /* Оригинальный цвет текста во всплывающих окнах */
+
+    --primary: 330 50% 70%; /* Нежно-розовый для основного цвета */
+    --primary-foreground: 0 0% 100%; /* Белый для текста на основном цвете */
+
+    --secondary: 32 100% 98%; /* Оригинальный вторичный цвет */
+    --secondary-foreground: 24 9.8% 10%; /* Оригинальный цвет текста на вторичном цвете */
+
+    --muted: 60 4.8% 95.9%; /* Оригинальный приглушенный цвет */
+    --muted-foreground: 25 5.3% 44.7%; /* Оригинальный цвет текста на приглушенном фоне */
+
+    --accent: 60 4.8% 95.9%; /* Оригинальный акцентный цвет */
+    --accent-foreground: 24 9.8% 10%; /* Оригинальный цвет текста на акцентном цвете */
+
+    --destructive: 0 84.2% 60.2%; /* Оригинальный деструктивный цвет (красный) */
+    --destructive-foreground: 60 9.1% 97.8%; /* Оригинальный цвет текста на деструктивном цвете */
+
+    --border: 20 5.9% 90%; /* Оригинальный цвет границ */
+    --input: 0 0% 90%; /* Оригинальный цвет полей ввода */
+    --ring: 330 50% 70%; /* Оригинальный цвет обводки */
+    --radius: 18px; /* Радиус скругления */
+  }
+}
+
+* {
+  font-family: var(--font-nunito), sans-serif;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background: #fff;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #dbdadd;
+  border-radius: 6px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #dbdadd;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+#nprogress .bar {
+  @apply bg-primary !important;
+}
+
+#nprogress .peg {
+  @apply shadow-md shadow-primary !important;
+}
+
+#nprogress .spinner-icon {
+  @apply border-t-primary border-l-primary !important;
+}
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
